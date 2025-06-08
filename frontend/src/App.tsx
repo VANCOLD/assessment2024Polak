@@ -1,18 +1,19 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
-import Navbar from './components/project-navbar/navbar'
-import Finance from './components/project-dashboard/finance/finance'
-import TaskPlanning from './components/project-dashboard/task-planning/task-planning'
+import NavbarMain from './components/navbar-main/navbar-main'
+import TaskPlanning from './components/task-planning-dashboard/task-planning/task-planning'
+import FinanceDashboard from './components/finance-dashboard/finance-dashboard'
+
 
 function App() {
 
   return (
     <BrowserRouter>
-      <Navbar />
+      <NavbarMain />
       <Routes>
-        <Route path="/finance" element={<Finance />} />
-        <Route path="/task-planning" element={<TaskPlanning />} />
           <Route path="*" element={<Navigate to="/finance" replace />} /> 
+          <Route path="/finance" element={<FinanceDashboard />} />
+          <Route path="/task-planning" element={<TaskPlanning />} />
       </Routes>
     </BrowserRouter>
   )
