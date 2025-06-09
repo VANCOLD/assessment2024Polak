@@ -31,7 +31,7 @@ export default function FinanceModal({
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
       <DialogTitle>
-        {editingData?.id ? "Geldeinlage bearbeiten" : "Neue Geldeinlage"}
+        {editingData?.id ? "Finanzierung bearbeitenNeue Geldeinlage erfassen" : "Neue Geldeinlage"}
       </DialogTitle>
       <DialogContent>
         {editingData && (

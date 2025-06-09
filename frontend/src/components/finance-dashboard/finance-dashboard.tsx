@@ -20,28 +20,32 @@ const nb_selectorColor = "#457b9d";
 export default function FinanceDashboard() {
   const [projectData, setProjectData] = useState<ProjectDto[]>([]);
   const [categories, setCategories] = useState<CategoryDto[]>([]);
-  const [editingData, setEditingData] = useState<InvestmentDto>(emptyInvestment);
   const [investments, setInvestments] = useState<InvestmentDto[]>([]);
+  const [editingData, setEditingData] = useState<InvestmentDto>(emptyInvestment);
   const [modalOpen, setModalOpen] = useState(false);
 
-  // Add state for selected project
-  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProjectData();
     fetchCategories();
-    fetchInvestments();
   }, []);
+
+  useEffect(() => {
+    if (selectedProjectId) {
+      fetchInvestments(selectedProjectId);
+    }
+  }, [selectedProjectId]);
 
   const fetchProjectData = async () => {
     try {
       const res = await fetch("http://localhost:8080/api/projects");
       const data = await res.json();
-      data.sort((a, b) => a.name.localeCompare(b.name));
+      data.sort((a, b) => a.name.localeCompare(b.name)); // sorting alphabetical before storing!
       setProjectData(data);
-      if (data.length > 0) setSelectedProjectId(data[0].id); // default to first project
+      if (data.length > 0) setSelectedProjectId(data[0].id);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching projects:", error);
     }
   };
 
@@ -51,28 +55,29 @@ export default function FinanceDashboard() {
       const data = await res.json();
       setCategories(data);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching categories:", error);
     }
   };
 
-  const fetchInvestments = async () => {
-    try {
-      const res = await fetch("http://localhost:8080/api/finance");
-      const data = await res.json();
-      setInvestments(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+const fetchInvestments = async (projectId: string | null) => {
+  if (!projectId) return; // if we dont have a projectId just do nothing
+
+  try {
+    const res = await fetch(`http://localhost:8080/api/finance/${projectId}`);
+    const data = await res.json();
+    setInvestments(data);
+  } catch (error) {
+    console.error("Error fetching investments:", error);
+  }
+};
 
   const handleSubmit = async (data: InvestmentDto): Promise<boolean> => {
-    if (!selectedProjectId) {
+    if (!selectedProjectId) { // failsafe
       console.error("No project selected!");
       return false;
     }
 
-    // Add projectId to the investment data before sending
-    const dataWithProject = { ...data, projectId: selectedProjectId };
+    const dataWithProject = { ...data, projectId: selectedProjectId }; // request body
 
     try {
       const res = await fetch("http://localhost:8080/api/finance", {
@@ -80,26 +85,26 @@ export default function FinanceDashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataWithProject),
       });
-      if (!res.ok) throw new Error("Failed to save");
+
+      if (!res.ok) throw new Error("Failed to save investment");
       const saved = await res.json();
 
       setInvestments((prev) => {
         const existing = prev.find((inv) => inv.id === saved.id);
-        if (existing) {
-          return prev.map((inv) => (inv.id === saved.id ? saved : inv));
-        } else {
-          return [...prev, saved];
-        }
+        return existing
+          ? prev.map((inv) => (inv.id === saved.id ? saved : inv))
+          : [...prev, saved];
       });
 
       setModalOpen(false);
       return true;
     } catch (err) {
-      console.error(err);
+      console.error("Error saving investment:", err);
       return false;
     }
   };
 
+  // Modal based stuff
   const handleEdit = (investment: InvestmentDto) => {
     setEditingData(investment);
     setModalOpen(true);
@@ -129,7 +134,7 @@ export default function FinanceDashboard() {
           <NavbarSelector
             projectDisplayData={projectData.map(mapToProjectDisplay)}
             selectedProjectId={selectedProjectId}
-            onProjectSelect={(id: number) => setSelectedProjectId(id)}
+            onProjectSelect={(id: string) => setSelectedProjectId(id)}
           />
         </Toolbar>
       </AppBar>
@@ -138,6 +143,7 @@ export default function FinanceDashboard() {
         <Typography variant="h5" gutterBottom>
           Finanzübersicht
         </Typography>
+
         <Button variant="contained" onClick={handleCreate} sx={{ mb: 2 }}>
           Neue Geldeinlage
         </Button>

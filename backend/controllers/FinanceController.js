@@ -18,8 +18,8 @@ router.get('/finance/categories', (req, res) => {
 });
 
 
-router.get('/finance', (req, res) => {
-  const projectId = req.query.projectId ? Number(req.query.projectId) : undefined;
+router.get('/finance/:projectId', (req, res) => {
+  const projectId = req.params.projectId;
   const investments = getInvestments(projectId);
   res.json(investments);
 });
