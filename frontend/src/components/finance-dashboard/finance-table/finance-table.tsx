@@ -1,29 +1,9 @@
 // FinanceTable.tsx
-import {
-  Box,
-  Button,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
 import CommentIcon from '@mui/icons-material/Comment';
 import type { InvestmentDto } from "../../../persistence/InvestmentDto";
 
-type FinanceTableProps = {
-  investments: InvestmentDto[];
-  onEdit: (investment: InvestmentDto) => void;
-};
-
-export default function FinanceTable({
-  investments,
-  onEdit,
-}: FinanceTableProps) {
+export default function FinanceTable({ investments, onEdit }: {investments: InvestmentDto[], onEdit: (investment: InvestmentDto) => void}) {
   return (
     <Box mt={10}>
       <Typography variant="h6" gutterBottom>

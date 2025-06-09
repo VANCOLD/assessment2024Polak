@@ -1,6 +1,7 @@
 import { Box, FormControl, MenuItem, Select, TextField, type SelectChangeEvent } from "@mui/material";
 import type { ProjectDisplayDto } from "../../../persistence/ProjectDisplayDto";
 
+// Using a custom type here aswell, makes the typing easier / more readable
 type FinanceNavbarProps = {
   projectDisplayData: ProjectDisplayDto[];
   selectedProjectId: string | null;
@@ -33,23 +34,21 @@ export default function FinanceNavbar({ projectDisplayData = [], selectedProject
           ))}
         </Select>
       </FormControl>
-
       <TextField
         sx={{
           backgroundColor: "#457b9d",
-          "& .MuiInputBase-root": { backgroundColor: "background.paper" },
+          "& .MuiInputBase-root": { backgroundColor: "background.paper" }, // used to get rid of white corners
         }}
         name="projectmanager"
         value={selectedProject?.projektleiter ?? "Projektleiter*In"}
         disabled
         size="small"
       />
-
       <TextField
         sx={{
           width: 500,
           backgroundColor: "#457b9d",
-          "& .MuiInputBase-root": { backgroundColor: "background.paper" },
+          "& .MuiInputBase-root": { backgroundColor: "background.paper" },  // used to get rid of white corners
         }}
         name="projectdescription"
         value={selectedProject?.beschreibung ?? "Beschreibung"}

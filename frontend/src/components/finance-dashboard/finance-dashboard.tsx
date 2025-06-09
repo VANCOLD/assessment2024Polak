@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  Container,
-  Typography,
-} from "@mui/material";
+import { AppBar, Toolbar, Button, Container, Typography } from "@mui/material";
 import NavbarSelector from "./finance-navbar/finance-navbar";
 import type { CategoryDto } from "../../persistence/CategoryDto";
 import type { ProjectDto } from "../../persistence/ProjectDto";
@@ -23,19 +17,21 @@ export default function FinanceDashboard() {
   const [investments, setInvestments] = useState<InvestmentDto[]>([]);
   const [editingData, setEditingData] = useState<InvestmentDto>(emptyInvestment);
   const [modalOpen, setModalOpen] = useState(false);
-
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
+  // regular useEffect, used for fetching 
   useEffect(() => {
     fetchProjectData();
     fetchCategories();
   }, []);
 
+  // use effect updates the investments once someone selects a project!
   useEffect(() => {
     if (selectedProjectId) {
       fetchInvestments(selectedProjectId);
     }
   }, [selectedProjectId]);
+
 
   const fetchProjectData = async () => {
     try {
@@ -49,6 +45,7 @@ export default function FinanceDashboard() {
     }
   };
 
+
   const fetchCategories = async () => {
     try {
       const res = await fetch("http://localhost:8080/api/finance/categories");
@@ -58,6 +55,7 @@ export default function FinanceDashboard() {
       console.error("Error fetching categories:", error);
     }
   };
+
 
 const fetchInvestments = async (projectId: string | null) => {
   if (!projectId) return; // if we dont have a projectId just do nothing
@@ -70,6 +68,7 @@ const fetchInvestments = async (projectId: string | null) => {
     console.error("Error fetching investments:", error);
   }
 };
+
 
   const handleSubmit = async (data: InvestmentDto): Promise<boolean> => {
     if (!selectedProjectId) { // failsafe
@@ -104,6 +103,7 @@ const fetchInvestments = async (projectId: string | null) => {
     }
   };
 
+
   // Modal based stuff
   const handleEdit = (investment: InvestmentDto) => {
     setEditingData(investment);
@@ -120,12 +120,13 @@ const fetchInvestments = async (projectId: string | null) => {
     setModalOpen(false);
   };
 
+
   return (
     <>
       <AppBar
         position="fixed"
         sx={{
-          top: 64,
+          top: 64, // if i didnt put this here both appbars would overlap
           backgroundColor: nb_selectorColor,
           zIndex: (theme) => theme.zIndex.appBar,
         }}
